@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMB Agency - Theo dõi đơn hàng</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --primary: #1a4b7a;
+      --primary-dark: #0b2b4e;
+      --accent: #ffc107;
+      --bg: #f4f7fc;
+      --text: #1e293b;
+      --muted: #6b7a8d;
+      --border: #e2e8f0;
+      --success: #1e7e34;
+      --success-bg: #d4f4dd;
+      --warning: #856404;
+      --warning-bg: #ffeeba;
+      --info: #084298;
+      --info-bg: #cfe2ff;
+      --pending: #4a5b6e;
+      --pending-bg: #e2e8f0;
+      --danger: #c0392b;
+      --danger-bg: #fdeaea;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: var(--text);
+    }
+
+    /* ===== SVG icon base ===== */
+    .icon-svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .icon-svg.lg { width: 22px; height: 22px; }
+    .icon-svg.xl { width: 48px; height: 48px; stroke-width: 1.5; }
+
+    /* ===== Header ===== */
+    .header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      background: var(--accent);
+      color: var(--primary-dark);
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .brand-text h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 0.75rem;
+      opacity: 0.85;
+    }
+
+    .hotline-badge {
+      background: rgba(255,255,255,0.15);
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ===== Main ===== */
+    .main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h2 {
+      font-size: 1.6rem;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ===== Search card ===== */
+    .search-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 35px -8px rgba(0, 20, 40, 0.15);
+      max-width: 800px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-box input {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.85rem 1.15rem;
+      border: 2px solid var(--border);
+      border-radius: 60px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      outline: none;
+      color: var(--text);
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(26, 75, 122, 0.15);
+    }
+
+    .search-box button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.85rem 1.75rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      justify-content: center;
+    }
+
+    .search-box button:hover { background: var(--primary-dark); }
+    .search-box button:active { transform: scale(0.97); }
+
+    /* ===== Sample codes ===== */
+    .sample-section {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1.5px dashed var(--border);
+    }
+
+    .sample-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.6rem;
+      text-align: center;
+    }
+
+    .sample-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .sample-chip {
+      background: #eef2f6;
+      border: 1.5px solid transparent;
+      padding: 0.35rem 0.75rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'SF Mono', Consolas, monospace;
+    }
+
+    .sample-chip:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(26, 75, 122, 0.25);
+    }
+
+    .sample-chip .chip-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sample-chip .chip-status.pending { background: #94a3b8; }
+    .sample-chip .chip-status.shipping { background: #e0a800; }
+    .sample-chip .chip-status.delivering { background: #3b82f6; }
+    .sample-chip .chip-status.delivered { background: #22c55e; }
+
+    /* ===== Recent history ===== */
+    .recent-section {
+      max-width: 900px;
+      margin: 0 auto 1.5rem;
+      background: white;
+      border-radius: 20px;
+      padding: 1.25rem;
+      box-shadow: 0 10px 25px -8px rgba(0, 20, 40, 0.1);
+      display: none;
+    }
+
+    .recent-section.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .recent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .recent-header h3 {
+      color: var(--primary-dark);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .clear-all-btn {
+      background: transparent;
+      border: 1.5px solid #f1c1c1;
+      color: var(--danger);
+      padding: 0.35rem 0.85rem;
+      border-radius: 40px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .clear-all-btn:hover {
+      background: var(--danger-bg);
+      border-color: #e74c3c;
+    }
+
+    .recent-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+
+    .recent-item {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 0.6rem 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .recent-item:hover {
+      border-color: var(--primary);
+      background: #eef4fb;
+      transform: translateY(-1px);
+    }
+
+    .recent-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recent-item-code {
+      font-weight: 700;
+      color: var(--primary-dark);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .recent-item-meta {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .recent-item-status {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      background: var(--pending-bg);
+      color: var(--pending);
+      white-space: nowrap;
+    }
+
+    .recent-item-status.delivered { background: var(--success-bg); color: var(--success); }
+    .recent-item-status.shipping { background: var(--warning-bg); color: var(--warning); }
+    .recent-item-status.delivering { background: var(--info-bg); color: var(--info); }
+
+    .remove-btn {
+      background: transparent;
+      border: none;
+      color: #a0aec0;
+      cursor: pointer;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    .remove-btn:hover {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    /* ===== Tracking result ===== */
+    .result-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .tracking-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px -10px rgba(0, 20, 40, 0.1);
+      overflow: hidden;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .tracking-card.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tracking-header {
+      background: var(--primary-dark);
+      color: white;
+      padding: 1.15rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .tracking-header h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      background: var(--accent);
+      color: var(--primary-dark);
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-badge .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--primary-dark);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .tracking-details {
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .info-section h4 {
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1.5px dashed var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-row {
+      display: flex;
+      margin-bottom: 0.65rem;
+      font-size: 0.9rem;
+      gap: 8px;
+    }
+
+    .info-label {
+      width: 105px;
+      color: var(--muted);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .info-value {
+      flex: 1;
+      color: var(--text);
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .timeline {
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .timeline h4 {
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1.5px dashed var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 0.85rem;
+      padding-bottom: 1rem;
+      position: relative;
+    }
+
+    .timeline-item:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 22px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--border);
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px var(--border);
+      flex-shrink: 0;
+      margin-top: 3px;
+      z-index: 1;
+      transition: all 0.3s;
+    }
+
+    .timeline-dot.completed {
+      background: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .timeline-content { flex: 1; min-width: 0; }
+
+    .timeline-title {
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 3px;
+      font-size: 0.92rem;
+    }
+
+    .timeline-time {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .timeline-desc {
+      font-size: 0.85rem;
+      color: #4a5b6e;
+      margin-top: 3px;
+    }
+
+    .no-result {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+      max-width: 800px;
+      margin: 0 auto;
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+
+    .no-result.active { display: block; }
+
+    .no-result .icon-wrap {
+      width: 72px;
+      height: 72px;
+      background: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: var(--muted);
+    }
+
+    .no-result h3 {
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+      font-size: 1.15rem;
+    }
+
+    .no-result p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* ============================================================
+       ===== FOOTER (BỔ SUNG CSS CHI TIẾT) =====
+       ============================================================ */
+    .footer {
+      background: linear-gradient(180deg, #0b1a2b 0%, #071320 100%);
+      color: #b0c4de;
+      padding: 3rem 1.5rem 0;
+      margin-top: auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Vệt sáng trang trí trên footer */
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--primary), var(--accent), transparent);
+      opacity: 0.7;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.5fr;
+      gap: 2.5rem;
+      padding-bottom: 2.5rem;
+    }
+
+    /* --- Cột 1: Brand --- */
+    .footer-col-brand .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .footer-col-brand .footer-logo-icon {
+      background: var(--accent);
+      color: var(--primary-dark);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+    }
+
+    .footer-col-brand .footer-logo-text {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    .footer-col-brand .footer-logo-text span {
+      color: var(--accent);
+    }
+
+    .footer-desc {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: #8fa4bd;
+      margin-bottom: 1.25rem;
+      max-width: 340px;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 10px;
+    }
+
+    .social-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b0c4de;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-decoration: none;
+    }
+
+    .social-btn:hover {
+      background: var(--accent);
+      color: var(--primary-dark);
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    .social-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* --- Cột 2: Liên kết --- */
+    .footer-col-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 1.15rem;
+      position: relative;
+      padding-bottom: 0.6rem;
+      letter-spacing: 0.3px;
+    }
+
+    .footer-col-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 32px;
+      height: 2.5px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .footer-links li a {
+      color: #8fa4bd;
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-links li a::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.5;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .footer-links li a:hover {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .footer-links li a:hover::before {
+      opacity: 1;
+      width: 6px;
+      height: 6px;
+    }
+
+    /* --- Cột 3: Liên hệ --- */
+    .footer-contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .footer-contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: #8fa4bd;
+      text-decoration: none;
+      transition: all 0.2s;
+      padding: 0.6rem;
+      border-radius: 10px;
+      margin: -0.6rem;
+    }
+
+    .footer-contact-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: white;
+    }
+
+    .footer-contact-icon {
+      width: 34px;
+      height: 34px;
+      background: rgba(255, 193, 7, 0.12);
+      color: var(--accent);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.25s;
+    }
+
+    .footer-contact-item:hover .footer-contact-icon {
+      background: var(--accent);
+      color: var(--primary-dark);
+      transform: scale(1.08);
+    }
+
+    .footer-contact-icon svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .footer-contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-top: 2px;
+    }
+
+    .footer-contact-label {
+      font-size: 0.72rem;
+      color: #6b8299;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .footer-contact-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #d4e0f0;
+    }
+
+    .footer-contact-item:hover .footer-contact-value {
+      color: var(--accent);
+    }
+
+    /* --- Bottom bar --- */
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 1.25rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      font-size: 0.82rem;
+      color: #6b8299;
+    }
+
+    .footer-bottom-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-bottom-left strong {
+      color: #b0c4de;
+      font-weight: 600;
+    }
+
+    .footer-bottom-right {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-bottom-right a {
+      color: #6b8299;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-bottom-right a:hover {
+      color: var(--accent);
+    }
+
+    /* ===== RESPONSIVE MOBILE ===== */
+    @media (max-width: 768px) {
+      .header { padding: 0.85rem 1rem; }
+      .brand-icon { width: 38px; height: 38px; font-size: 20px; }
+      .brand-text h1 { font-size: 1.2rem; }
+      .brand-text p { font-size: 0.7rem; }
+      .hotline-badge { font-size: 0.75rem; padding: 0.4rem 0.8rem; }
+
+      .main { padding: 1rem 0.85rem; }
+
+      .hero h2 { font-size: 1.35rem; }
+      .hero p { font-size: 0.85rem; }
+
+      .search-card { padding: 1.15rem; border-radius: 16px; }
+      .search-box { gap: 8px; }
+      .search-box input { padding: 0.75rem 1rem; font-size: 0.9rem; min-width: 0; width: 100%; }
+      .search-box button { width: 100%; padding: 0.75rem 1.25rem; font-size: 0.9rem; }
+
+      .sample-chip { font-size: 0.7rem; padding: 0.3rem 0.65rem; }
+
+      .recent-section { padding: 1rem; border-radius: 16px; }
+      .recent-header h3 { font-size: 0.9rem; }
+      .recent-list { grid-template-columns: 1fr; }
+
+      .tracking-header { padding: 1rem 1.15rem; }
+      .tracking-header h3 { font-size: 1rem; }
+      .status-badge { font-size: 0.7rem; padding: 0.35rem 0.85rem; }
+
+      .tracking-details {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1.15rem;
+      }
+
+      .timeline { padding: 0 1.15rem 1.15rem; }
+
+      .info-row { font-size: 0.85rem; flex-direction: column; gap: 2px; margin-bottom: 0.7rem; }
+      .info-label { width: auto; font-size: 0.78rem; }
+      .info-value { font-size: 0.88rem; }
+
+      /* Footer mobile */
+      .footer { padding: 2.25rem 1rem 0; }
+      .footer-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding-bottom: 2rem;
+        text-align: left;
+      }
+      .footer-desc { max-width: 100%; }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.25rem 0;
+      }
+      .footer-bottom-right {
+        justify-content: center;
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .footer-bottom-right { flex-direction: column; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="brand">
+        <div class="brand-icon">H</div>
+        <div class="brand-text">
+          <h1>HMB Agency</h1>
+          <p>Vận chuyển & Logistics</p>
+        </div>
+      </div>
+      <div class="hotline-badge">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        0855 555 140
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="hero">
+      <h2>Theo dõi đơn hàng</h2>
+      <p>Nhập mã vận đơn để xem hành trình và trạng thái mới nhất theo thời gian thực.</p>
+    </div>
+
+    <div class="search-card">
+      <div class="search-box">
+        <input type="text" id="trackingInput" placeholder="VD: HMB123456789" autocomplete="off">
+        <button id="trackBtn">
+          <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Tra cứu
+        </button>
+      </div>
+
+      <!-- Nhiều mã thử -->
+      <div class="sample-section">
+        <div class="sample-label">Mã thử nghiệm (nhấn để tra cứu nhanh)</div>
+        <div class="sample-list">
+          <span class="sample-chip" onclick="fillSample('HMB555666777')">
+            <span class="chip-status pending"></span> HMB555666777
+          </span>
+          <span class="sample-chip" onclick="fillSample('HMB123456789')">
+            <span class="chip-status shipping"></span> HMB123456789
+          </span>
+          <span class="sample-chip" onclick="fillSample('HMB777888999')">
+            <span class="chip-status shipping"></span> HMB777888999
+          </span>
+          <span class="sample-chip" onclick="fillSample('HMB111222333')">
+            <span class="chip-status delivering"></span> HMB111222333
+          </span>
+          <span class="sample-chip" onclick="fillSample('HMB987654321')">
+            <span class="chip-status delivered"></span> HMB987654321
+          </span>
+          <span class="sample-chip" onclick="fillSample('HMB444555666')">
+            <span class="chip-status delivered"></span> HMB444555666
+          </span>
+          <span class="sample-chip" onclick="fillSample('HMB666777888')">
+            <span class="chip-status pending"></span> HMB666777888
+          </span>
+          <span class="sample-chip" onclick="fillSample('HMB222333444')">
+            <span class="chip-status delivering"></span> HMB222333444
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lịch sử tra cứu -->
+    <div id="recentSection" class="recent-section">
+      <div class="recent-header">
+        <h3>
+          <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Đã tra cứu gần đây
+        </h3>
+        <button class="clear-all-btn" id="clearAllBtn">
+          <svg class="icon-svg" viewBox="0 0 24 24" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          Xóa tất cả
+        </button>
+      </div>
+      <div class="recent-list" id="recentList"></div>
+    </div>
+
+    <!-- Kết quả -->
+    <div class="result-container">
+      <div id="trackingCard" class="tracking-card">
+        <div class="tracking-header">
+          <h3>
+            <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <span id="displayOrderId">#HMB123456789</span>
+          </h3>
+          <span class="status-badge" id="statusBadge">
+            <span class="dot"></span> <span id="statusText">Đang vận chuyển</span>
+          </span>
+        </div>
+        <div class="tracking-details">
+          <div class="info-section">
+            <h4>
+              <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Thông tin đơn hàng
+            </h4>
+            <div class="info-row">
+              <span class="info-label">Mã vận đơn:</span>
+              <span class="info-value" id="infoTrackingId">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Ngày gửi:</span>
+              <span class="info-value" id="infoSendDate">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dự kiến giao:</span>
+              <span class="info-value" id="infoEstimate">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dịch vụ:</span>
+              <span class="info-value" id="infoService">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Cân nặng:</span>
+              <span class="info-value" id="infoWeight">—</span>
+            </div>
+          </div>
+          <div class="info-section">
+            <h4>
+              <svg class="icon-svg" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Người gửi / Nhận
+            </h4>
+            <div class="info-row">
+              <span class="info-label">Người gửi:</span>
+              <span class="info-value" id="infoSender">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">SĐT gửi:</span>
+              <span class="info-value" id="infoSenderPhone">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Người nhận:</span>
+              <span class="info-value" id="infoReceiver">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">SĐT nhận:</span>
+              <span class="info-value" id="infoReceiverPhone">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Địa chỉ giao:</span>
+              <span class="info-value" id="infoAddress">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="timeline">
+          <h4>
+            <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Hành trình đơn hàng
+          </h4>
+          <div id="timelineList"></div>
+        </div>
+      </div>
+
+      <div id="noResult" class="no-result">
+        <div class="icon-wrap">
+          <svg class="icon-svg xl" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h3>Không tìm thấy đơn hàng</h3>
+        <p>Vui lòng kiểm tra lại mã vận đơn hoặc liên hệ hotline <strong>0855 555 140</strong> để được hỗ trợ.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ================= FOOTER (BỔ SUNG CSS CHI TIẾT) ================= -->
+  <footer class="footer">
+    <div class="footer-container">
+
+      <!-- Cột 1: Brand + mô tả + social -->
+      <div class="footer-col-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">H</div>
+          <div class="footer-logo-text">HMB <span>Agency</span></div>
+        </div>
+        <p class="footer-desc">
+          Đơn vị vận chuyển & logistics chuyên nghiệp, mang đến giải pháp giao hàng nhanh chóng,
+          an toàn và minh bạch cho mọi khách hàng trên toàn quốc.
+        </p>
+        <div class="footer-social">
+          <a class="social-btn" href="#" title="Facebook" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a class="social-btn" href="#" title="Zalo" aria-label="Zalo">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </a>
+          <a class="social-btn" href="#" title="Youtube" aria-label="Youtube">
+            <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+          </a>
+          <a class="social-btn" href="mailto:hmb.agency.group@gmail.com" title="Email" aria-label="Email">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Cột 2: Liên kết nhanh -->
+      <div>
+        <div class="footer-col-title">Liên kết nhanh</div>
+        <ul class="footer-links">
+          <li><a href="#">Trang chủ</a></li>
+          <li><a href="#">Theo dõi đơn hàng</a></li>
+          <li><a href="#">Bảng giá dịch vụ</a></li>
+          <li><a href="#">Câu hỏi thường gặp</a></li>
+          <li><a href="#">Chính sách bảo mật</a></li>
+        </ul>
+      </div>
+
+      <!-- Cột 3: Liên hệ -->
+      <div>
+        <div class="footer-col-title">Liên hệ với chúng tôi</div>
+        <div class="footer-contact-list">
+          <a class="footer-contact-item" href="tel:0855555140">
+            <div class="footer-contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Hotline 24/7</span>
+              <span class="footer-contact-value">0855 555 140</span>
+            </div>
+          </a>
+
+          <a class="footer-contact-item" href="mailto:hmb.agency.group@gmail.com">
+            <div class="footer-contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Email hỗ trợ</span>
+              <span class="footer-contact-value">hmb.agency.group@gmail.com</span>
+            </div>
+          </a>
+
+          <div class="footer-contact-item" style="cursor: default;">
+            <div class="footer-contact-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="footer-contact-info">
+              <span class="footer-contact-label">Văn phòng</span>
+              <span class="footer-contact-value">TP. Hồ Chí Minh, Việt Nam</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">
+        <svg class="icon-svg" viewBox="0 0 24 24" style="width:14px;height:14px;color:#6b8299;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        © 2025 <strong>HMB Agency</strong>. Tất cả các quyền được bảo lưu.
+      </div>
+      <div class="footer-bottom-right">
+        <a href="#">Điều khoản sử dụng</a>
+        <a href="#">Chính sách bảo mật</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      const STORAGE_KEY = 'hmb_recent_orders';
+      const MAX_RECENT = 8;
+
+      const ICONS = {
+        box: '<svg class="icon-svg" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>'
+      };
+
+      /* ===== DỮ LIỆU ĐƠN HÀNG (8 đơn, đủ trạng thái) ===== */
+      const ordersDB = {
+        'HMB123456789': {
+          id: 'HMB123456789',
+          status: 'Đang vận chuyển',
+          sendDate: '2025-01-15 09:30',
+          estimate: '2025-01-18 17:00',
+          service: 'HMB Express',
+          weight: '2.5 kg',
+          sender: 'Công ty TNHH ABC',
+          senderPhone: '0901 234 567',
+          receiver: 'Nguyễn Văn An',
+          receiverPhone: '0912 345 678',
+          address: '123 Lê Lợi, Quận 1, TP. Hồ Chí Minh',
+          timeline: [
+            { title: 'Đã lấy hàng', time: '2025-01-15 09:30', desc: 'Nhân viên HMB đã lấy hàng tại kho người gửi.', completed: true },
+            { title: 'Đang vận chuyển', time: '2025-01-15 14:15', desc: 'Hàng đã đến trung tâm phân loại HMB - TP.HCM.', completed: true },
+            { title: 'Đang giao hàng', time: '2025-01-18 08:00', desc: 'Đơn hàng đang được giao đến người nhận.', completed: false },
+            { title: 'Giao hàng thành công', time: 'Dự kiến 2025-01-18 17:00', desc: 'Chờ xác nhận từ người nhận.', completed: false }
+          ]
+        },
+        'HMB987654321': {
+          id: 'HMB987654321',
+          status: 'Đã giao hàng',
+          sendDate: '2025-01-10 08:00',
+          estimate: '2025-01-12 14:00',
+          service: 'HMB Standard',
+          weight: '1.2 kg',
+          sender: 'Shop Thời Trang XYZ',
+          senderPhone: '0933 111 222',
+          receiver: 'Trần Thị Bích',
+          receiverPhone: '0987 654 321',
+          address: '456 Nguyễn Huệ, TP. Đà Nẵng',
+          timeline: [
+            { title: 'Đã lấy hàng', time: '2025-01-10 08:00', desc: 'Đã nhận hàng từ shop.', completed: true },
+            { title: 'Đang vận chuyển', time: '2025-01-10 16:30', desc: 'Hàng rời kho Hà Nội.', completed: true },
+            { title: 'Đang giao hàng', time: '2025-01-12 09:00', desc: 'Shipper đang trên đường giao.', completed: true },
+            { title: 'Giao hàng thành công', time: '2025-01-12 13:45', desc: 'Người nhận đã ký nhận hàng.', completed: true }
+          ]
+        },
+        'HMB555666777': {
+          id: 'HMB555666777',
+          status: 'Chờ xử lý',
+          sendDate: '2025-01-20 10:15',
+          estimate: '2025-01-23 16:00',
+          service: 'HMB Standard',
+          weight: '0.8 kg',
+          sender: 'Cửa hàng Mỹ Phẩm ABC',
+          senderPhone: '0909 888 777',
+          receiver: 'Lê Minh Châu',
+          receiverPhone: '0932 456 789',
+          address: '789 Hai Bà Trưng, TP. Hà Nội',
+          timeline: [
+            { title: 'Đơn hàng đã tiếp nhận', time: '2025-01-20 10:15', desc: 'HMB đã tiếp nhận yêu cầu vận chuyển.', completed: true },
+            { title: 'Chờ lấy hàng', time: 'Dự kiến 2025-01-20 15:00', desc: 'Nhân viên sẽ đến lấy hàng tại shop.', completed: false },
+            { title: 'Đang vận chuyển', time: '—', desc: 'Chưa bắt đầu.', completed: false }
+          ]
+        },
+        'HMB111222333': {
+          id: 'HMB111222333',
+          status: 'Đang giao hàng',
+          sendDate: '2025-01-19 07:45',
+          estimate: '2025-01-21 12:00',
+          service: 'HMB Express',
+          weight: '3.0 kg',
+          sender: 'Điện tử ABC',
+          senderPhone: '0901 111 222',
+          receiver: 'Phạm Văn Dũng',
+          receiverPhone: '0911 222 333',
+          address: '101 Trần Hưng Đạo, TP. Cần Thơ',
+          timeline: [
+            { title: 'Đã lấy hàng', time: '2025-01-19 07:45', desc: 'Đã nhận hàng từ người gửi.', completed: true },
+            { title: 'Đang vận chuyển', time: '2025-01-19 15:20', desc: 'Hàng rời kho miền Nam.', completed: true },
+            { title: 'Đang giao hàng', time: '2025-01-21 08:00', desc: 'Shipper đang trên đường giao.', completed: false }
+          ]
+        },
+        'HMB444555666': {
+          id: 'HMB444555666',
+          status: 'Đã giao hàng',
+          sendDate: '2025-01-05 11:00',
+          estimate: '2025-01-08 15:00',
+          service: 'HMB Standard',
+          weight: '0.5 kg',
+          sender: 'Nhà sách Văn Hóa',
+          senderPhone: '0938 777 666',
+          receiver: 'Hoàng Thị Mai',
+          receiverPhone: '0912 888 999',
+          address: '55 Nguyễn Trãi, TP. Hải Phòng',
+          timeline: [
+            { title: 'Đã lấy hàng', time: '2025-01-05 11:00', desc: 'Đã nhận hàng.', completed: true },
+            { title: 'Đang vận chuyển', time: '2025-01-05 18:00', desc: 'Hàng đang trên đường.', completed: true },
+            { title: 'Đang giao hàng', time: '2025-01-08 09:30', desc: 'Shipper đang giao.', completed: true },
+            { title: 'Giao hàng thành công', time: '2025-01-08 14:20', desc: 'Đã ký nhận.', completed: true }
+          ]
+        },
+        'HMB777888999': {
+          id: 'HMB777888999',
+          status: 'Đang vận chuyển',
+          sendDate: '2025-01-21 13:00',
+          estimate: '2025-01-24 17:00',
+          service: 'HMB Express',
+          weight: '1.8 kg',
+          sender: 'Thực phẩm sạch HMB',
+          senderPhone: '0902 333 444',
+          receiver: 'Vũ Minh Tuấn',
+          receiverPhone: '0933 555 777',
+          address: '202 Lý Thường Kiệt, TP. Huế',
+          timeline: [
+            { title: 'Đã lấy hàng', time: '2025-01-21 13:00', desc: 'Đã nhận hàng.', completed: true },
+            { title: 'Đang vận chuyển', time: '2025-01-21 19:30', desc: 'Đang trên đường vận chuyển.', completed: true },
+            { title: 'Đang giao hàng', time: '—', desc: 'Chờ giao.', completed: false }
+          ]
+        },
+        'HMB666777888': {
+          id: 'HMB666777888',
+          status: 'Chờ xử lý',
+          sendDate: '2025-01-22 08:20',
+          estimate: '2025-01-25 16:00',
+          service: 'HMB Standard',
+          weight: '4.2 kg',
+          sender: 'Nội thất Gỗ Việt',
+          senderPhone: '0908 123 456',
+          receiver: 'Đặng Quốc Bảo',
+          receiverPhone: '0937 654 321',
+          address: '88 Phan Đình Phùng, TP. Nha Trang',
+          timeline: [
+            { title: 'Đơn hàng đã tiếp nhận', time: '2025-01-22 08:20', desc: 'HMB đã tiếp nhận yêu cầu.', completed: true },
+            { title: 'Chờ lấy hàng', time: 'Dự kiến 2025-01-22 14:00', desc: 'Nhân viên sẽ đến lấy hàng.', completed: false }
+          ]
+        },
+        'HMB222333444': {
+          id: 'HMB222333444',
+          status: 'Đang giao hàng',
+          sendDate: '2025-01-18 09:00',
+          estimate: '2025-01-20 15:00',
+          service: 'HMB Express',
+          weight: '1.0 kg',
+          sender: 'Shop Giày Dép Sài Gòn',
+          senderPhone: '0911 555 666',
+          receiver: 'Ngô Thị Hồng',
+          receiverPhone: '0988 777 888',
+          address: '305 Võ Văn Kiệt, TP. Vũng Tàu',
+          timeline: [
+            { title: 'Đã lấy hàng', time: '2025-01-18 09:00', desc: 'Đã nhận hàng.', completed: true },
+            { title: 'Đang vận chuyển', time: '2025-01-18 20:00', desc: 'Hàng đã đến trung tâm phân loại.', completed: true },
+            { title: 'Đang giao hàng', time: '2025-01-20 09:30', desc: 'Shipper đang trên đường giao.', completed: false }
+          ]
+        }
+      };
+
+      let realtimeInterval = null;
+      let currentOrderId = null;
+
+      const trackingInput = document.getElementById('trackingInput');
+      const trackBtn = document.getElementById('trackBtn');
+      const trackingCard = document.getElementById('trackingCard');
+      const noResult = document.getElementById('noResult');
+      const recentSection = document.getElementById('recentSection');
+      const recentList = document.getElementById('recentList');
+      const clearAllBtn = document.getElementById('clearAllBtn');
+
+      /* ===== LOCALSTORAGE LỊCH SỬ ===== */
+      function getHistory() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) { return []; }
+      }
+
+      function saveHistory(history) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch (e) {}
+      }
+
+      function addToHistory(orderId, status) {
+        let history = getHistory();
+        history = history.filter(item => item.id !== orderId);
+        history.unshift({ id: orderId, status: status || 'Không xác định', timestamp: Date.now() });
+        if (history.length > MAX_RECENT) history = history.slice(0, MAX_RECENT);
+        saveHistory(history);
+        renderHistory();
+      }
+
+      function removeFromHistory(orderId) {
+        let history = getHistory();
+        history = history.filter(item => item.id !== orderId);
+        saveHistory(history);
+        renderHistory();
+      }
+
+      function clearHistory() {
+        if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử tra cứu?')) {
+          saveHistory([]);
+          renderHistory();
+        }
+      }
+
+      function getStatusClass(status) {
+        if (!status) return '';
+        const s = status.toLowerCase();
+        if (s.includes('đã giao') || s.includes('thành công')) return 'delivered';
+        if (s.includes('đang giao')) return 'delivering';
+        if (s.includes('đang vận chuyển') || s.includes('vận chuyển')) return 'shipping';
+        return '';
+      }
+
+      function timeAgo(timestamp) {
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+        if (seconds < 60) return 'vừa xong';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes} phút trước`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} giờ trước`;
+        const days = Math.floor(hours / 24);
+        if (days < 30) return `${days} ngày trước`;
+        return new Date(timestamp).toLocaleDateString('vi-VN');
+      }
+
+      function renderHistory() {
+        const history = getHistory();
+        if (history.length === 0) {
+          recentSection.classList.remove('active');
+          return;
+        }
+        recentSection.classList.add('active');
+        recentList.innerHTML = '';
+
+        history.forEach(item => {
+          const statusClass = getStatusClass(item.status);
+          const div = document.createElement('div');
+          div.className = 'recent-item';
+          div.innerHTML = `
+            <div class="recent-item-info">
+              <div class="recent-item-code">${ICONS.box} ${item.id}</div>
+              <div class="recent-item-meta">
+                <span class="recent-item-status ${statusClass}">${item.status}</span>
+                <span>•</span>
+                <span>${timeAgo(item.timestamp)}</span>
+              </div>
+            </div>
+            <button class="remove-btn" title="Xóa khỏi lịch sử" data-id="${item.id}">
+              <svg class="icon-svg" viewBox="0 0 24 24" style="width:12px;height:12px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          `;
+
+          div.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-btn')) return;
+            trackingInput.value = item.id;
+            trackOrder();
+            trackingCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+
+          const removeBtn = div.querySelector('.remove-btn');
+          removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeFromHistory(item.id);
+          });
+
+          recentList.appendChild(div);
+        });
+      }
+
+      /* ===== HIỂN THỊ KẾT QUẢ ===== */
+      function showResult(show) {
+        if (show) {
+          trackingCard.classList.add('active');
+          noResult.classList.remove('active');
+        } else {
+          trackingCard.classList.remove('active');
+          noResult.classList.add('active');
+        }
+      }
+
+      function renderOrder(order) {
+        document.getElementById('displayOrderId').textContent = '#' + order.id;
+        document.getElementById('statusText').textContent = order.status;
+        document.getElementById('infoTrackingId').textContent = order.id;
+        document.getElementById('infoSendDate').textContent = order.sendDate;
+        document.getElementById('infoEstimate').textContent = order.estimate;
+        document.getElementById('infoService').textContent = order.service;
+        document.getElementById('infoWeight').textContent = order.weight;
+        document.getElementById('infoSender').textContent = order.sender;
+        document.getElementById('infoSenderPhone').textContent = order.senderPhone;
+        document.getElementById('infoReceiver').textContent = order.receiver;
+        document.getElementById('infoReceiverPhone').textContent = order.receiverPhone;
+        document.getElementById('infoAddress').textContent = order.address;
+
+        const timelineList = document.getElementById('timelineList');
+        timelineList.innerHTML = '';
+        order.timeline.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'timeline-item';
+          div.innerHTML = `
+            <div class="timeline-dot ${item.completed ? 'completed' : ''}"></div>
+            <div class="timeline-content">
+              <div class="timeline-title">${item.title}</div>
+              <div class="timeline-time">${item.time}</div>
+              <div class="timeline-desc">${item.desc}</div>
+            </div>
+          `;
+          timelineList.appendChild(div);
+        });
+      }
+
+      /* ===== MÔ PHỎNG THỜI GIAN THỰC ===== */
+      function startRealtimeUpdates(orderId) {
+        if (realtimeInterval) {
+          clearInterval(realtimeInterval);
+          realtimeInterval = null;
+        }
+        if (!ordersDB[orderId]) return;
+
+        realtimeInterval = setInterval(() => {
+          const order = ordersDB[orderId];
+          if (!order || order.status === 'Đã giao hàng') {
+            clearInterval(realtimeInterval);
+            realtimeInterval = null;
+            return;
+          }
+
+          if (order.status === 'Chờ xử lý') {
+            order.status = 'Đang vận chuyển';
+            order.timeline = order.timeline.map(t =>
+              t.title === 'Chờ lấy hàng' ? { ...t, completed: true, time: new Date().toLocaleString('vi-VN') } : t
+            );
+            if (!order.timeline.some(t => t.title === 'Đang vận chuyển' && t.completed)) {
+              order.timeline.push({
+                title: 'Đang vận chuyển',
+                time: new Date().toLocaleString('vi-VN'),
+                desc: 'Hàng đã được lấy và đang trên đường vận chuyển.',
+                completed: true
+              });
+            }
+          } else if (order.status === 'Đang vận chuyển') {
+            order.status = 'Đang giao hàng';
+            if (!order.timeline.some(t => t.title === 'Đang giao hàng')) {
+              order.timeline.push({
+                title: 'Đang giao hàng',
+                time: new Date().toLocaleString('vi-VN'),
+                desc: 'Đơn hàng đang được giao đến người nhận.',
+                completed: false
+              });
+            }
+          } else if (order.status === 'Đang giao hàng') {
+            order.status = 'Đã giao hàng';
+            order.timeline = order.timeline.map(t => ({ ...t, completed: true }));
+            if (!order.timeline.some(t => t.title === 'Giao hàng thành công')) {
+              order.timeline.push({
+                title: 'Giao hàng thành công',
+                time: new Date().toLocaleString('vi-VN'),
+                desc: 'Người nhận đã ký nhận hàng.',
+                completed: true
+              });
+            }
+          }
+
+          renderOrder(order);
+          addToHistory(orderId, order.status);
+        }, 5000);
+      }
+
+      /* ===== XỬ LÝ TRA CỨU ===== */
+      function trackOrder() {
+        const query = trackingInput.value.trim().toUpperCase();
+        if (!query) {
+          alert('Vui lòng nhập mã vận đơn.');
+          return;
+        }
+
+        if (realtimeInterval) {
+          clearInterval(realtimeInterval);
+          realtimeInterval = null;
+        }
+
+        const order = ordersDB[query];
+        if (order) {
+          currentOrderId = query;
+          const originalOrder = JSON.parse(JSON.stringify(order));
+          ordersDB[query] = originalOrder;
+          renderOrder(originalOrder);
+          showResult(true);
+          addToHistory(query, originalOrder.status);
+          startRealtimeUpdates(query);
+        } else {
+          showResult(false);
+          currentOrderId = null;
+        }
+      }
+
+      window.fillSample = function(code) {
+        trackingInput.value = code;
+        trackOrder();
+      };
+
+      trackBtn.addEventListener('click', trackOrder);
+      trackingInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') trackOrder();
+      });
+      clearAllBtn.addEventListener('click', clearHistory);
+
+      /* ===== KHỞI TẠO ===== */
+      renderHistory();
+      showResult(false);
+
+      setInterval(() => {
+        if (getHistory().length > 0) renderHistory();
+      }, 60000);
+    })();
+  </script>
+</body>
+</html>
